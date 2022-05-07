@@ -92,6 +92,7 @@ function App() {
         ethers.utils.formatUnits(await faucetContract.getTotalDonators(), 0)
       );
       // await getDonators();
+      setLoading(false);
     } catch (err) {
       console.error(err);
     }
@@ -108,6 +109,14 @@ function App() {
       if (userBalance > value) {
         const transaction = await faucetContract.deposit({
           value: ethers.utils.parseUnits(value, "ether"),
+        });
+        toast({
+          position: "top-right",
+          description:
+            "This generally takes up to 60 seconds on the Ropsten Test Network. Please be patient :)",
+          status: "info",
+          duration: 6000,
+          isClosable: true,
         });
         setLoading(true);
         await transaction.wait();
@@ -159,6 +168,14 @@ function App() {
       const checkIfAllowed = await requestAllowed();
       if (checkIfAllowed) {
         const transaction = await faucetContract.withdraw(account);
+        toast({
+          position: "top-right",
+          description:
+            "This generally takes up to 60 seconds on the Ropsten Test Network. Please be patient :)",
+          status: "info",
+          duration: 6000,
+          isClosable: true,
+        });
         setLoading(true);
         await transaction.wait();
         await getBalance();
