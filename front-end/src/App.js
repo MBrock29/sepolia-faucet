@@ -12,6 +12,7 @@ import {
   Heading,
   Box,
   Spinner,
+  useMediaQuery,
   useToast,
 } from "@chakra-ui/react";
 import Deposit from "./components/Deposit";
@@ -27,6 +28,7 @@ function App() {
   const [errorMessage, setErrorMessage] = useState("");
   const toast = useToast();
   const [donators, setDonators] = useState(0);
+  const mob = useMediaQuery("(max-width: 675px)");
 
   const getProviderOrSigner = async (needSigner = false) => {
     const provider = await web3ModalRef.current.connect();
@@ -221,6 +223,7 @@ function App() {
           width="800px"
           mx="auto"
           alignItems="center"
+          flexDirection={mob && "column"}
         >
           <Withdraw
             request={request}
