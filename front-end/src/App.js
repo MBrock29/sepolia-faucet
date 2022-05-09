@@ -223,7 +223,6 @@ function App() {
           width="800px"
           mx="auto"
           alignItems="center"
-          flexDirection={mob && "column"}
         >
           <Withdraw
             request={request}
