@@ -204,7 +204,7 @@ function App() {
   };
 
   return (
-    <Box bg="gray.800" textAlign="center" height="100%">
+    <Box bg="gray.800" textAlign="center" height={mob ? "100%" : "100vh"}>
       <Heading color="white" pt="10">
         Ropsten Faucet
       </Heading>
@@ -231,6 +231,8 @@ function App() {
             donators={donators}
             loading={loading}
           />
+
+          {mob && <br />}
 
           <Deposit
             deposit={deposit}
