@@ -4,14 +4,10 @@ import Web3Modal from "web3modal";
 import { ethers } from "ethers";
 import { FAUCET_CONTRACT_ADDRESS, abi } from "./constants/index";
 import {
-  Button,
-  Input,
   Text,
   Flex,
-  Spacer,
   Heading,
   Box,
-  Spinner,
   useMediaQuery,
   useToast,
 } from "@chakra-ui/react";

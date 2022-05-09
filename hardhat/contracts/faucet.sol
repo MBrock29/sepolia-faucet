@@ -6,7 +6,7 @@ contract faucet {
 
     uint256 public balance;
     uint256 public totalDonators;
-    uint256 public withdrawTime = 1 days;
+    uint256 public withdrawTime = 12 hours;
     uint256 public withdrawAmount;
 
     struct user { 
@@ -23,8 +23,8 @@ contract faucet {
     constructor() payable {
         balance = 0;
         owner = msg.sender;
-        totalDonators = 0;
-        withdrawAmount = 50000000000000000;
+        totalDonators = 497;
+        withdrawAmount = 500000000000000000;
     }
 
     function waitTime(uint256 _hours) public onlyOwner {
