@@ -204,7 +204,7 @@ function App() {
   };
 
   return (
-    <Box bg="gray.800" textAlign="center" height="100vh">
+    <Box bg="gray.800" textAlign="center" height="100%">
       <Heading color="white" pt="10">
         Ropsten Faucet
       </Heading>
