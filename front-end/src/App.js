@@ -188,7 +188,7 @@ function App() {
         toast({
           position: "top-right",
           description:
-            "Already requested within the past 24 hours. Please try again later.",
+            "Already requested within the past 12 hours. Please try again later.",
           status: "error",
           duration: 6000,
           isClosable: true,
