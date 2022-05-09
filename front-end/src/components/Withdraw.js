@@ -25,7 +25,7 @@ const Withdraw = ({ request, balance, donators, loading }) => {
             <Heading fontFamily="monospace" color="white" fontSize="2xl" mb="5">
               Faucet Funds
             </Heading>
-            <Heading fontFamily="monospace" color="white" fontSize="5xl" mb="5">
+            <Heading fontFamily="monospace" color="white" fontSize="3xl" mb="5">
               {balance} ETH
             </Heading>
           </Flex>
@@ -33,7 +33,7 @@ const Withdraw = ({ request, balance, donators, loading }) => {
             <Heading fontFamily="monospace" color="white" fontSize="2xl" mb="5">
               Total Requests
             </Heading>
-            <Heading fontFamily="monospace" color="white" fontSize="5xl" mb="5">
+            <Heading fontFamily="monospace" color="white" fontSize="3xl" mb="5">
               {donators}
             </Heading>
           </Flex>
