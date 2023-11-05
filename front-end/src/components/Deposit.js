@@ -40,7 +40,7 @@ const Deposit = ({ deposit, loading }) => {
               colorScheme="teal"
               mb="5"
               width="2xs"
-              onClick={() => deposit(0.5)}
+              onClick={() => deposit("0.5")}
             >
               0.5 ETH
             </Button>
@@ -48,7 +48,7 @@ const Deposit = ({ deposit, loading }) => {
               colorScheme="teal"
               mb="5"
               width="2xs"
-              onClick={() => deposit(5)}
+              onClick={() => deposit("5")}
             >
               5 ETH
             </Button>
@@ -56,7 +56,7 @@ const Deposit = ({ deposit, loading }) => {
               colorScheme="teal"
               mb="5"
               width="2xs"
-              onClick={() => deposit(50)}
+              onClick={() => deposit("50")}
             >
               50 ETH
             </Button>
