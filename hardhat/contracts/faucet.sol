@@ -24,7 +24,7 @@ contract faucet {
         balance = 0;
         owner = msg.sender;
         totalDonators = 497;
-        withdrawAmount = 500000000000000000;
+        withdrawAmount = 5000000000000000;
     }
 
     function waitTime(uint256 _hours) public onlyOwner {
