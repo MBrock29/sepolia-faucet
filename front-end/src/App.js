@@ -30,10 +30,11 @@ function App() {
     const provider = await web3ModalRef.current.connect();
     const web3Provider = new ethers.providers.Web3Provider(provider);
     const { chainId } = await web3Provider.getNetwork();
-    if (chainId !== 3) {
+    console.log(chainId);
+    if (chainId !== 11155111) {
       toast({
         position: "top-right",
-        description: "Please connect to the Ropsten test network",
+        description: "Please connect to the sepolia test network",
         status: "error",
         duration: 10000,
         isClosable: true,
@@ -50,7 +51,7 @@ function App() {
   useEffect(() => {
     if (!walletConnected) {
       web3ModalRef.current = new Web3Modal({
-        network: "ropsten",
+        network: "sepolia",
         providerOptions: {},
         disableInjectedProvider: false,
       });
@@ -73,26 +74,23 @@ function App() {
     }
   };
 
-  const infuraId = "2502c32a7b564e57b92d87707fa16fdb";
+  const infuraId = "43f25644024744528d2f8e59ce7e5fab";
 
   const getBalance = async () => {
     try {
-      const provider = new ethers.providers.InfuraProvider("ropsten", infuraId);
+      const provider = new ethers.providers.InfuraProvider("sepolia", infuraId);
       const faucetContract = new ethers.Contract(
         FAUCET_CONTRACT_ADDRESS,
         abi,
         provider
       );
-      setBalance(
-        ethers.utils.formatUnits(await faucetContract.getBalance(), 18)
-      );
-      setDonators(
-        ethers.utils.formatUnits(await faucetContract.getTotalDonators(), 0)
-      );
-      // await getDonators();
-      setLoading(false);
+      const balance = await faucetContract.getBalance();
+      setBalance(ethers.utils.formatUnits(balance, 18));
     } catch (err) {
-      console.error(err);
+      console.error("Error calling getBalance:", err);
+      if (err.data) {
+        console.log("Revert reason:", ethers.utils.toUtf8String(err.data));
+      }
     }
   };
 
@@ -111,7 +109,7 @@ function App() {
         toast({
           position: "top-right",
           description:
-            "This generally takes up to 60 seconds on the Ropsten Test Network. Please be patient :)",
+            "This generally takes up to 60 seconds on the sepolia Test Network. Please be patient :)",
           status: "info",
           duration: 6000,
           isClosable: true,
@@ -169,7 +167,7 @@ function App() {
         toast({
           position: "top-right",
           description:
-            "This generally takes up to 60 seconds on the Ropsten Test Network. Please be patient :)",
+            "This generally takes up to 60 seconds on the sepolia Test Network. Please be patient :)",
           status: "info",
           duration: 6000,
           isClosable: true,
@@ -202,7 +200,7 @@ function App() {
   return (
     <Box bg="gray.800" textAlign="center" height={mob ? "100%" : "100vh"}>
       <Heading color="white" pt="10">
-        Ropsten Faucet
+        Sepolia Faucet
       </Heading>
       <Text color="white" fontSize="18" padding="10">
         Out of ETH? Don't panic! Just click the request button on the bottom
