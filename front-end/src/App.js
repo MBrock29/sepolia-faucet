@@ -84,7 +84,7 @@ function App() {
     } catch (err) {
       console.error("Error calling getBalance:", err);
       if (err.data) {
-        console.log("Revert reason:", ethers.toUtf8String(err.data));
+        console.error("Revert reason:", ethers.toUtf8String(err.data));
       }
     }
     setLoading(false)
