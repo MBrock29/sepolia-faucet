@@ -1,8 +1,8 @@
 require("@nomiclabs/hardhat-waffle");
+require("@nomiclabs/hardhat-ethers");
 require("dotenv").config({ path: ".env" });
 
 const ALCHEMY_API_KEY_URL = process.env.ALCHEMY_API_KEY_URL;
-
 const SEPOLIA_PRIVATE_KEY = process.env.SEPOLIA_PRIVATE_KEY;
 
 module.exports = {

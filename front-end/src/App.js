@@ -3,14 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import Web3Modal from "web3modal";
 import { ethers } from "ethers";
 import { FAUCET_CONTRACT_ADDRESS, abi } from "./constants/index";
-import {
-  Text,
-  Flex,
-  Heading,
-  Box,
-  useMediaQuery,
-  useToast,
-} from "@chakra-ui/react";
+import { Text, Flex, Heading, Box, Button, useMediaQuery, useToast } from "@chakra-ui/react";
 import Deposit from "./components/Deposit";
 import Withdraw from "./components/Withdraw";
 
@@ -23,15 +16,15 @@ function App() {
   const [userBalance, setUserBalance] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const toast = useToast();
-  const [donators, setDonators] = useState(0);
+  const [donators, setDonators] = useState(2);
   const [mob] = useMediaQuery("(max-width: 675px)");
+  const [owner, setOwner] = useState(null);
 
   const getProviderOrSigner = async (needSigner = false) => {
     const provider = await web3ModalRef.current.connect();
-    const web3Provider = new ethers.providers.Web3Provider(provider);
+    const web3Provider = new ethers.BrowserProvider(provider);
     const { chainId } = await web3Provider.getNetwork();
-    console.log(chainId);
-    if (chainId !== 11155111) {
+    if (chainId !== 11155111n) {
       toast({
         position: "top-right",
         description: "Please connect to the sepolia test network",
@@ -62,13 +55,19 @@ function App() {
 
   const connectWallet = async () => {
     try {
-      const provider = await getProviderOrSigner(true);
+      const signer = await getProviderOrSigner(true);
+      const web3Provider = await getProviderOrSigner(false);
       setWalletConnected(true);
-      const address = await provider.getAddress();
+      const address = await signer.getAddress();
       setAccount(address);
-      const balance = await provider.getBalance();
-      const balanceInETH = ethers.utils.formatEther(balance);
+      const balance = await web3Provider.getBalance(address);
+      const balanceInETH = ethers.formatEther(balance);
       setUserBalance(balanceInETH);
+      await getBalance();
+      const faucetContract = new ethers.Contract(FAUCET_CONTRACT_ADDRESS, abi, signer);
+      const ownerAddress = await faucetContract.owner();
+      setOwner(ownerAddress);
+
     } catch (err) {
       console.error(err);
     }
@@ -78,33 +77,30 @@ function App() {
 
   const getBalance = async () => {
     try {
-      const provider = new ethers.providers.InfuraProvider("sepolia", infuraId);
-      const faucetContract = new ethers.Contract(
-        FAUCET_CONTRACT_ADDRESS,
-        abi,
-        provider
-      );
+      const provider = new ethers.InfuraProvider("sepolia", infuraId);
+      const faucetContract = new ethers.Contract(FAUCET_CONTRACT_ADDRESS, abi, provider);
       const balance = await faucetContract.getBalance();
-      setBalance(ethers.utils.formatUnits(balance, 18));
+      setBalance(ethers.formatUnits(balance, 18));
     } catch (err) {
       console.error("Error calling getBalance:", err);
       if (err.data) {
-        console.log("Revert reason:", ethers.utils.toUtf8String(err.data));
+        console.log("Revert reason:", ethers.toUtf8String(err.data));
       }
     }
+    setLoading(false)
   };
 
   const deposit = async (value) => {
     try {
-      const provider = await getProviderOrSigner(true);
+      const signer = await getProviderOrSigner(true);
       const faucetContract = new ethers.Contract(
         FAUCET_CONTRACT_ADDRESS,
         abi,
-        provider
+        signer
       );
       if (userBalance > value) {
         const transaction = await faucetContract.deposit({
-          value: ethers.utils.parseUnits(value, "ether"),
+          value: ethers.parseUnits(value, "ether"),
         });
         toast({
           position: "top-right",
@@ -116,6 +112,7 @@ function App() {
         });
         setLoading(true);
         await transaction.wait();
+        setDonators(prev => prev + 1)
         toast({
           position: "top-right",
           description: "Deposit success, thanks for your support!",
@@ -155,11 +152,11 @@ function App() {
 
   const request = async () => {
     try {
-      const provider = await getProviderOrSigner(true);
+      const signer = await getProviderOrSigner(true);
       const faucetContract = new ethers.Contract(
         FAUCET_CONTRACT_ADDRESS,
         abi,
-        provider
+        signer
       );
       const checkIfAllowed = await requestAllowed();
       if (checkIfAllowed) {
@@ -186,7 +183,7 @@ function App() {
         toast({
           position: "top-right",
           description:
-            "Already requested within the past 12 hours. Please try again later.",
+            "Already requested within the past 24 hours. Please try again later.",
           status: "error",
           duration: 6000,
           isClosable: true,
@@ -197,8 +194,50 @@ function App() {
     }
   };
 
+  const emptyFaucet = async () => {
+    try {
+      const signer = await getProviderOrSigner(true);
+      const faucetContract = new ethers.Contract(FAUCET_CONTRACT_ADDRESS, abi, signer);
+      const transaction = await faucetContract.emptyFaucet();
+      toast({
+        position: "top-right",
+        description: "Withdrawing full balance, please wait...",
+        status: "info",
+        duration: 6000,
+        isClosable: true,
+      });
+      await transaction.wait();
+      toast({
+        position: "top-right",
+        description: "Withdrawal successful!",
+        status: "success",
+        duration: 6000,
+        isClosable: true,
+      });
+      await getBalance();
+    } catch (err) {
+      console.error(err);
+      toast({
+        position: "top-right",
+        description: "Failed to withdraw full balance",
+        status: "error",
+        duration: 6000,
+        isClosable: true,
+      });
+    }
+  };
+
   return (
-    <Box bg="gray.800" textAlign="center" height={mob ? "100%" : "100vh"}>
+    <Box 
+      bg="gray.800" 
+      textAlign="center" 
+      minHeight="100vh" 
+      display="flex" 
+      flexDirection="column" 
+      justifyContent="center"
+      alignItems="center"
+      pb="10"
+    >
       <Heading color="white" pt="10">
         Sepolia Faucet
       </Heading>
@@ -211,7 +250,7 @@ function App() {
         donating any spare ETH you may have to help others out.
       </Text>
 
-      <Flex pt="10">
+      <Flex>
         <Flex
           justifyContent="space-between"
           width="800px"
@@ -235,6 +274,17 @@ function App() {
           />
         </Flex>
       </Flex>
+      
+      {account && account.toLowerCase() === owner?.toLowerCase() && (
+        <Button
+          mt="20px"
+          colorScheme="teal"
+          onClick={emptyFaucet}
+          isLoading={loading}
+        >
+          Withdraw Full Balance
+        </Button>
+      )}
     </Box>
   );
 }

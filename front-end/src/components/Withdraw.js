@@ -31,7 +31,7 @@ const Withdraw = ({ request, balance, donators, loading }) => {
           </Flex>
           <Flex direction="column">
             <Heading fontFamily="monospace" color="white" fontSize="2xl" mb="5">
-              Total Requests
+              Total Donations
             </Heading>
             <Heading fontFamily="monospace" color="white" fontSize="3xl" mb="5">
               {donators}
@@ -39,11 +39,11 @@ const Withdraw = ({ request, balance, donators, loading }) => {
           </Flex>
           <Flex direction="column">
             <Text fontFamily="monospace" color="white" fontSize="lg" mb="5">
-              You can request 0.5 ETH every 12 hours
+              You can request 0.05 ETH every 24 hours
             </Text>
 
             <Button colorScheme="teal" width="2xs" onClick={() => request()}>
-              Request 0.5 ETH
+              Request 0.05 ETH
             </Button>
           </Flex>
         </Flex>
