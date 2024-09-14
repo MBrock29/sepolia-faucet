@@ -24,7 +24,7 @@ function App() {
   const [userBalance, setUserBalance] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const toast = useToast();
-  const [donators, setDonators] = useState(2);
+  const [donators, setDonators] = useState();
   const [mob] = useMediaQuery('(max-width: 675px)');
   const [owner, setOwner] = useState(null);
 
@@ -83,6 +83,29 @@ function App() {
       console.error(err);
     }
   };
+
+  console.log(donators);
+
+  const getTotalDonators = async () => {
+    try {
+      const provider = await getProviderOrSigner(false);
+      const faucetContract = new ethers.Contract(
+        FAUCET_CONTRACT_ADDRESS,
+        abi,
+        provider
+      );
+
+      const totalDonators = await faucetContract.getTotalDonators();
+      console.log(totalDonators);
+      setDonators(totalDonators.toString());
+    } catch (err) {
+      console.error('Error fetching total donators:', err);
+    }
+  };
+
+  useEffect(() => {
+    getTotalDonators();
+  }, []);
 
   const infuraId = '43f25644024744528d2f8e59ce7e5fab';
 
