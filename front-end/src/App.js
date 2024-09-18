@@ -84,26 +84,22 @@ function App() {
     }
   };
 
-  console.log(donators);
-
-  const getTotalDonators = async () => {
-    try {
-      const provider = await getProviderOrSigner(false);
-      const faucetContract = new ethers.Contract(
-        FAUCET_CONTRACT_ADDRESS,
-        abi,
-        provider
-      );
-
-      const totalDonators = await faucetContract.getTotalDonators();
-      console.log(totalDonators);
-      setDonators(totalDonators.toString());
-    } catch (err) {
-      console.error('Error fetching total donators:', err);
-    }
-  };
-
   useEffect(() => {
+    const getTotalDonators = async () => {
+      try {
+        const provider = new ethers.InfuraProvider('sepolia', infuraId);
+        const faucetContract = new ethers.Contract(
+          FAUCET_CONTRACT_ADDRESS,
+          abi,
+          provider
+        );
+        const totalDonators = await faucetContract.getTotalDonators();
+        setDonators(totalDonators.toString());
+      } catch (err) {
+        console.error('Error fetching total donators:', err.message || err);
+      }
+    };
+
     getTotalDonators();
   }, []);
 
@@ -280,6 +276,16 @@ function App() {
       alignItems='center'
       pb='10'
     >
+      {!walletConnected && (
+        <Button
+          mt='20px'
+          colorScheme='blue'
+          onClick={connectWallet}
+          isLoading={loading}
+        >
+          Connect Wallet
+        </Button>
+      )}
       <Heading color='gray.800' pt='10'>
         Sepolia Faucet
       </Heading>
