@@ -28,6 +28,8 @@ function App() {
   const [mob] = useMediaQuery('(max-width: 675px)');
   const [owner, setOwner] = useState(null);
 
+  console.log(walletConnected);
+
   const getProviderOrSigner = async (needSigner = false) => {
     const provider = await web3ModalRef.current.connect();
     const web3Provider = new ethers.BrowserProvider(provider);
@@ -94,6 +96,7 @@ function App() {
           provider
         );
         const totalDonators = await faucetContract.getTotalDonators();
+        console.log('Total Donators from contract:', totalDonators.toString());
         setDonators(totalDonators.toString());
       } catch (err) {
         console.error('Error fetching total donators:', err.message || err);
@@ -276,7 +279,10 @@ function App() {
       alignItems='center'
       pb='10'
     >
-      {!walletConnected && (
+      <Heading color='gray.800' pt='10'>
+        Sepolia Faucet
+      </Heading>
+      {!walletConnected ? (
         <Button
           mt='20px'
           colorScheme='blue'
@@ -285,11 +291,12 @@ function App() {
         >
           Connect Wallet
         </Button>
+      ) : (
+        <Text color='gray.800' fontSize='18' paddingTop='4'>
+          Connected with address: {account}
+        </Text>
       )}
-      <Heading color='gray.800' pt='10'>
-        Sepolia Faucet
-      </Heading>
-      <Text color='gray.800' fontSize='18' padding='10'>
+      <Text color='gray.800' fontSize='18' padding='4'>
         Out of ETH? Don't panic! Just click the request button on the bottom
         left hand side.
       </Text>
