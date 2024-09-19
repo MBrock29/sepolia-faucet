@@ -1,15 +1,13 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-
 contract faucet {
-
     uint256 public balance;
     uint256 public totalDonators;
     uint256 public withdrawTime = 24 hours;
     uint256 public withdrawAmount;
 
-    struct user { 
+    struct user {
         address walletAddress;
         bool canWithdraw;
         uint256 paymentAmount;
@@ -23,7 +21,7 @@ contract faucet {
     constructor() payable {
         balance = 0;
         owner = msg.sender;
-        totalDonators = 497;
+        totalDonators = 12;
         withdrawAmount = 50000000000000000;
     }
 
@@ -34,46 +32,41 @@ contract faucet {
     event Deposit(
         address indexed userAddress,
         uint256 transferAmount,
-        uint256 contractBalance
+        uint256 contractBalance,
+        uint256 totalDonators
     );
 
     function deposit() public payable {
         balance = balance + msg.value;
+        totalDonators = totalDonators + 1;
         emit Deposit(
             msg.sender,
             msg.value,
-            address(this).balance
+            address(this).balance,
+            totalDonators
         );
     }
 
     event Withdraw(
         address indexed userAddress,
         uint256 transferAmount,
-        uint256 contractBalance,
-        uint256 totalDonators
+        uint256 contractBalance
     );
 
     function withdraw(address payable userAddress) public {
         balance = balance - withdrawAmount;
         (bool sent, ) = userAddress.call{value: withdrawAmount}("");
         require(sent, "Failed to send");
-        totalDonators = totalDonators + 1;
-        emit Withdraw(
-            msg.sender,
-            withdrawAmount,
-            address(this).balance,
-            totalDonators
-        );
+        emit Withdraw(msg.sender, withdrawAmount, address(this).balance);
         users[msg.sender].lastWithdrawTime = block.timestamp + withdrawTime;
     }
 
     modifier onlyOwner() {
-        require (msg.sender == owner);
+        require(msg.sender == owner);
         _;
     }
 
-
-    function emptyFaucet() public onlyOwner{
+    function emptyFaucet() public onlyOwner {
         (bool sent, ) = owner.call{value: balance}("");
         require(sent, "Failed to send");
         balance = address(this).balance;
@@ -100,5 +93,8 @@ contract faucet {
             return false;
         }
     }
- }
 
+    function test() public view returns (address) {
+        return address(this);
+    }
+}
