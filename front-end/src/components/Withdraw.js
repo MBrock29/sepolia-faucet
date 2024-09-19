@@ -37,7 +37,7 @@ const Withdraw = ({ request, balance, donators, loading }) => {
               Total Donations
             </Heading>
             <Heading fontFamily='monospace' fontSize='3xl' mb='5'>
-              {donators}
+              {donators.toString()}
             </Heading>
           </Flex>
           <Flex direction='column'>

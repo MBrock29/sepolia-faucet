@@ -6,8 +6,6 @@ async function main() {
   const deployedFaucetContract = await faucetContract.deploy();
 
   await deployedFaucetContract.deployed();
-
-  console.log('Faucet Contract Address:', deployedFaucetContract.address);
 }
 
 main()

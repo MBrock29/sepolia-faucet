@@ -24,11 +24,9 @@ function App() {
   const [userBalance, setUserBalance] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const toast = useToast();
-  const [donators, setDonators] = useState();
+  const [donators, setDonators] = useState(0);
   const [mob] = useMediaQuery('(max-width: 675px)');
   const [owner, setOwner] = useState(null);
-
-  console.log(walletConnected);
 
   const getProviderOrSigner = async (needSigner = false) => {
     const provider = await web3ModalRef.current.connect();
@@ -87,24 +85,24 @@ function App() {
   };
 
   useEffect(() => {
-    const getTotalDonators = async () => {
-      try {
-        const provider = new ethers.InfuraProvider('sepolia', infuraId);
-        const faucetContract = new ethers.Contract(
-          FAUCET_CONTRACT_ADDRESS,
-          abi,
-          provider
-        );
-        const totalDonators = await faucetContract.getTotalDonators();
-        console.log('Total Donators from contract:', totalDonators.toString());
-        setDonators(totalDonators.toString());
-      } catch (err) {
-        console.error('Error fetching total donators:', err.message || err);
-      }
-    };
-
     getTotalDonators();
   }, []);
+
+  const getTotalDonators = async () => {
+    try {
+      const provider = new ethers.InfuraProvider('sepolia', infuraId);
+      const faucetContract = new ethers.Contract(
+        FAUCET_CONTRACT_ADDRESS,
+        abi,
+        provider
+      );
+      const totalDonators = await faucetContract.getTotalDonators();
+
+      setDonators(totalDonators.toString());
+    } catch (err) {
+      console.error('Error fetching total donators:', err.message || err);
+    }
+  };
 
   const infuraId = '43f25644024744528d2f8e59ce7e5fab';
 
@@ -149,7 +147,7 @@ function App() {
         });
         setLoading(true);
         await transaction.wait();
-        setDonators((prev) => prev + 1);
+        await getTotalDonators();
         toast({
           position: 'top-right',
           description: 'Deposit success, thanks for your support!',
